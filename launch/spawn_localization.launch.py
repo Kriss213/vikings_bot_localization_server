@@ -21,11 +21,16 @@ def launch_setup(context, *arg, **args):
 
     package_name = "vikings_bot_localization_server"
 
-    amcl_config = os.path.join(get_package_share_directory(package_name), "config", f"{vikings_bot_name}_amcl_config.yaml")
+    #amcl_config = os.path.join(get_package_share_directory(package_name), "config", "vikings_bot_amcl_config.yaml")
+    amcl_config=PathJoinSubstitution([
+        FindPackageShare(package_name),
+        'config',
+        'vikings_bot_amcl_config.yaml'
+    ])
     #c = PathJoinSubstitution([get_package_share_directory(package_name), "config", vikings_bot_name_val, "_amcl_config.yaml"])
 
     print(x_spawn)
-
+    
 
     # AMCL node
     nav2_amcl = Node(
@@ -37,6 +42,9 @@ def launch_setup(context, *arg, **args):
         parameters=[amcl_config,
                     {"initial_pose": {"x": float(x_spawn)}},
                     {"initial_pose": {"y": float(y_spawn)}},
+                    {"initial_pose": {"yaw": float(yaw_spawn)}},
+                    {"base_frame_id": f"{vikings_bot_name}/base_footprint_link"},  # These are set from launch file
+                    {"odom_frame_id": f"{vikings_bot_name}/odom"}, # Because namespace is only applied to *topic* (not frame) parameters in yaml file  
                     {'use_sim_time': use_sim}
         ]
     )
